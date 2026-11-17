@@ -1,0 +1,731 @@
+/* ==========================================================
+   Colors taken from the skull wallpaper: black, blood red,
+   bone. Y2K accents: lime, hot pink, glitter silver.
+
+
+       selector {  property: value;  }
+   selector = WHAT to style, property = WHAT to change,
+   value = HOW to change it.
+   ========================================================== */
+
+/* ---------- 0. FONT ----------
+   Free Google font for headings. Offline? The browser uses
+   the backup fonts in --font-head, so nothing breaks. */
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&display=swap");
+
+
+/* ---------- 1. VARIABLES ----------
+   :root = the whole page. Change a color here once and every
+   rule that uses var(--name) changes with it. */
+:root {
+  --red: #ff4048;        /* labels, star bullets */
+  --blood: #a3121c;      /* buttons, table headers */
+  --bone: #d8cfbf;       /* soft text, active menu item */
+  --lime: #9dff4d;       /* links (y2k accent) */
+  --pink: #ff5fb0;       /* hover color (y2k accent) */
+  --font-head: "Pirata One", "Impact", fantasy;
+  --font-body: Verdana, Tahoma, Geneva, sans-serif;
+}
+
+
+/* ---------- 2. RESET ----------
+   * = every element. border-box makes width include padding and
+   border so boxes never grow past the screen. */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #12030a;
+  scrollbar-color: var(--blood) #000;   /* red scrollbar */
+}
+
+::selection {                            /* color of highlighted text */
+  background: var(--pink);
+  color: #000;
+}
+
+
+/* ---------- 3. LIVE BACKGROUND (3 layers) ----------
+   LAYER 1  body::before = fixed wallpaper made of 5 stacked
+            pictures: twinkling stars (2 sizes), the skull,
+            a red glow and a dark gradient.
+            The two star layers slowly move (@keyframes drift).
+   LAYER 2  body::after  = random y2k stickers floating up and down.
+   LAYER 3  html::after  = a few big stickers drifting over the page.
+   position: fixed pins them to the screen; z-index decides
+   who is in front (negative = behind the content). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;                                /* top/right/bottom/left = 0 */
+  z-index: -2;
+  background-image:
+    url("image/ui/stars-small.png"),
+    url("image/ui/stars-big.png"),
+    url("image/ui/skull-wallpaper.webp"),
+    radial-gradient(ellipse at 15% 85%, #6b0b14 0%, transparent 55%),
+    linear-gradient(160deg, #050102 0%, #1d0409 100%);
+  background-size: 256px 256px, 480px 480px, auto 100%, auto, auto;
+  background-position: 0 0, 0 0, right center, 0 0, 0 0;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+  animation: drift 50s linear infinite, pulse 7s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;                    /* clicks go through */
+  background-image: url("image/ui/stickers-a.png"), url("image/ui/stickers-b.png");
+  background-size: 1000px 1300px, 760px 980px;
+  background-position: 0 0, 0 0;
+  animation: floatup 80s linear infinite;
+}
+
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: url("image/ui/stickers-front.png") 0 0 / 1300px 1700px repeat;
+  animation: floatfront 120s linear infinite;
+}
+
+
+/* ---------- 4. TOP BAR (scrolling marquee) ----------
+   html::before = a bar before everything on the page.
+   The text slides across by animating text-indent. */
+html::before {
+  content: "\2605  welcome to my web \2605  a place for my portfolio  \2605  BSIT - 1\2605";
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 8px 0;
+  font: 1.5rem var(--font-head);
+  color: #ffffff;
+  background-color: #000000;
+  border-bottom: 4px solid var(--red);
+  animation: marquee 30s linear infinite;
+}
+
+
+/* ---------- 5. BODY (centered column) ----------
+   max-width + margin: 0 auto centers the content.
+   The big top padding leaves room for stickers sitting on the boxes.
+   cursor: url(...) swaps the arrow for a star. */
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 14px 10px;
+  font: 15px/1.65 var(--font-body);
+  color: #fff;
+  cursor: url("image/ui/star-cursor.png") 16 16, auto;
+}
+
+
+/* ---------- 6. TWO-COLUMN LAYOUT (content left, menu right) ----------
+   display: grid makes columns.
+   minmax(0, 1fr) = the page content takes all the free space;
+   272px = fixed width of the menu on the right.
+   align-items: start keeps each column from stretching. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  gap: 26px;
+  align-items: start;
+}
+
+
+/* ---------- 7. THE BLACK PROFILE BOXES ("modules") ----------
+   A comma means "all of these". Every page's main box has a
+   different class name, so one rule styles all of them.
+   border-image cuts the chalky picture into 9 pieces and wraps it
+   around the box. background-clip: padding-box keeps the black
+   and the spiderweb inside the rough edge.
+   position: relative lets the sticker (section 12) sit on the box. */
+.home,
+.about,
+.edubg,
+.skills,
+.hobbies,
+.Achievements,
+.goals,
+.photos,
+.info,
+main,
+.menu {
+  position: relative;
+  margin: 0 0 24px;
+  padding: 18px 22px 24px;
+  border: 22px solid transparent;
+  border-image: url("image/ui/grunge-frame.png") 44 round;
+  background: url("image/ui/web.svg"), rgba(0, 0, 0, 0.94);
+  background-clip: padding-box;
+}
+
+
+/* ---------- 8. HEADINGS ----------
+   Titles (h1 and the first h2 of each box) are filled with glitter:
+   background-clip: text shows the picture only inside the letters,
+   and the shimmer animation slides the picture. @supports = use it
+   only if the browser understands it; otherwise titles stay white. */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0.6em 0 0.4em;
+  font-family: var(--font-head);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: 3.2rem;
+  color: #fff;
+}
+
+h2 {
+  font-size: 2.2rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--blood);
+}
+
+h3 {
+  font-size: 1.8rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--blood);
+}
+
+h4 {                                  /* small red labels like the MySpace "General / Music" */
+  font-size: 1.5rem;
+  color: var(--red);
+}
+
+h5 {
+  font-size: 1.25rem;
+  color: var(--bone);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  h1,
+  .home > h2:first-child,
+  .about > h2:first-child,
+  .edubg > h2:first-child,
+  .skills > h2:first-child,
+  .hobbies > h2:first-child,
+  .Achievements > h2:first-child,
+  .goals > h2:first-child,
+  .photos > h2:first-child,
+  main > h2:first-child {
+    background: url("image/ui/glitter.png");
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(2px 2px 0 var(--blood));
+    animation: shimmer 5s linear infinite;
+  }
+}
+
+/* A heading alone above a box (the "ABOUT ME" title) gets a black
+   name tab so it stays readable. :only-child = the only element
+   inside its parent. */
+.content > div:first-child > h3:only-child {
+  display: table;
+  margin: 0 0 -6px 22px;
+  padding: 2px 20px 0;
+  background-color: #000;
+  border-bottom: 3px solid var(--red);
+}
+
+/* Home page: a banner picture (::before) and a blinking ONLINE tag (::after) */
+.intro::before {
+  content: "";
+  display: block;
+  height: 210px;
+  margin-bottom: 14px;
+  background: url("image/ui/welcome-banner.jpg") center / cover;
+  border: 3px solid #fff;
+  box-shadow: 4px 4px 0 var(--blood);
+}
+
+.intro::after {
+  content: "\2605  ONLINE";
+  display: block;
+  margin-top: -6px;
+  font-weight: bold;
+  color: var(--lime);
+  animation: blink 1.4s steps(1) infinite;
+}
+
+
+/* ---------- 9. TEXT, LISTS ---------- */
+p {
+  margin: 0.5em 0;
+}
+
+strong {
+  color: var(--red);
+}
+
+section,
+main > div {                          /* sub-boxes */
+  margin: 14px 0;
+  padding: 10px 16px;
+  border: 1px dashed #666;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+section > :first-child,
+main > div > :first-child {
+  margin-top: 0.3em;
+}
+
+/* list-style with a string replaces the round bullet with a star */
+ul {
+  margin: 0.5em 0;
+  padding-left: 1.7rem;
+  list-style: "\2605  ";
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+li::marker {
+  color: var(--red);
+}
+
+
+/* ---------- 10. TABLES ----------
+   The first rule clears the old border="1" look from the HTML.
+   td:first-child = first cell of each row (red label column).
+   tr:hover = highlight the row under the mouse. */
+table,
+th,
+td {
+  border: 0;
+}
+
+table {
+  width: 100%;
+  margin: 14px 0;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 8px 12px;
+  text-align: left;
+  font: 1.25rem var(--font-head);
+  color: #fff;
+  background-color: var(--blood);
+}
+
+td {
+  padding: 8px 12px;
+  vertical-align: top;
+  border-bottom: 1px dotted #777;
+}
+
+td:first-child {
+  color: var(--red);
+  font-weight: bold;
+}
+
+tr:hover td {
+  background-color: #1b1b1b;
+}
+
+
+/* ---------- 11. LINKS AND THE RIGHT-SIDE MENU ----------
+   a:hover = mouse over. a:visited = already clicked.
+   a:focus-visible = reached with the Tab key.
+   The pointer becomes a pixel hand on every link. */
+a {
+  color: var(--lime);
+  cursor: url("image/ui/hand-cursor.png") 10 1, pointer;
+}
+
+a:visited {
+  color: #d9a6ff;
+}
+
+a:hover {
+  color: var(--pink);
+}
+
+a:focus-visible {
+  outline: 3px dashed #fff;
+  outline-offset: 3px;
+}
+
+/* MENU = the "Contacting ..." box of a MySpace profile.
+   position: sticky keeps it on screen while you scroll. */
+.menu {
+  position: sticky;
+  top: 14px;
+  margin: 0;
+  padding: 10px 14px 14px;
+  border-width: 18px;
+}
+
+.menu h3 {
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--blood);
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;                    /* we draw our own star in ::before */
+}
+
+.menu li {
+  margin: 0;
+}
+
+.menu a {
+  display: block;
+  padding: 7px 6px;
+  font-size: 12.5px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  color: #fff;
+  border-bottom: 1px dotted #555;
+  transition: padding-left 0.15s, background-color 0.15s;
+}
+
+.menu a::before {
+  content: "\2605  ";
+  color: var(--red);
+}
+
+.menu a:visited {
+  color: #fff;
+}
+
+.menu a:hover,
+.menu a:focus-visible {
+  padding-left: 14px;
+  color: var(--pink);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* [aria-current="page"] is an ATTRIBUTE selector: it highlights the
+   menu item of the page you are on. */
+.menu a[aria-current="page"] {
+  color: #000;
+  background-color: var(--bone);
+}
+
+.menu a[aria-current="page"]::before {
+  content: "\25BA  ";
+  color: var(--blood);
+}
+
+
+/* ---------- 12. STICKERS ON THE BOXES ----------
+   :is(...) lets one rule target the ::after of every box.
+   --deco and --anim are variables each box sets for itself
+   (which sticker, which animation). */
+:is(.home, .about, .edubg, .skills, .hobbies, .Achievements, .goals, .photos, .info, main)::after {
+  content: "";
+  position: absolute;
+  right: 40px;
+  top: -124px;
+  width: 110px;
+  height: 110px;
+  z-index: 3;
+  background: var(--deco) center bottom / contain no-repeat;
+  pointer-events: none;
+  transform-origin: 50% 90%;
+  animation: var(--anim) 3.2s ease-in-out infinite;
+}
+
+.home { --deco: url("image/ui/deco-angel.png"); --anim: bob; }
+.about { --deco: url("image/ui/deco-heart.png"); --anim: heartbeat; }
+.edubg { --deco: url("image/ui/deco-edubg.png"); --anim: wiggle; }
+.skills { --deco: url("image/ui/deco-skills.png"); --anim: wiggle; }
+.hobbies { --deco: url("image/ui/deco-hob.png"); --anim: bob; }
+.Achievements { --deco: url("image/ui/deco-ach.png"); --anim: spin; }
+.goals { --deco: url("image/ui/deco-goals.png"); --anim: bob; }
+.photos { --deco: url("image/ui/deco-photos.png"); --anim: wiggle; }
+.info { --deco: url("image/ui/deco-info.png"); --anim: heartbeat; }
+main { --deco: url("image/ui/deco-tools.png"); --anim: bob; }
+
+
+/* ---------- 13. IMAGES ----------
+   White photo frame with a red "shadow". */
+img {
+  max-width: 100%;
+  height: auto;
+  border: 3px solid #fff;
+  box-shadow: 4px 4px 0 var(--blood);
+}
+
+/* float: left puts the profile picture on the left and the text
+   wraps on its right. display: flow-root keeps the text box
+   beside the picture instead of under it. */
+.home img,
+.about img {
+  float: left;
+  margin: 6px 20px 14px 0;
+}
+
+.home section,
+.about section {
+  display: flow-root;
+}
+
+br {
+  clear: none;
+}
+
+
+/* ---------- 14. PHOTO GALLERY (like "Friend Space") ----------
+   repeat(auto-fill, minmax(200px, 1fr)) = as many columns as fit,
+   each at least 200px wide. grid-column: 1 / -1 makes a heading
+   span the full row. object-fit: contain shows the whole
+   certificate without cropping. */
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.photos > h2,
+.photos > h4,
+.photos > h5 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+.photos img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background-color: #000;
+  transition: transform 0.2s;
+}
+
+.photos img:hover {
+  transform: scale(1.05) rotate(-1.5deg);
+  border-color: var(--pink);
+}
+
+
+/* ---------- 15. FOOTER ----------
+   footer::before = leopard strip.
+   footer::after  = row of blinkie badges that scroll sideways
+   forever (@keyframes ticker). */
+footer {
+  margin: 28px 0 0;
+  padding: 0 12px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--bone);
+  background-color: #000;
+  border-top: 3px solid var(--red);
+}
+
+footer::before {
+  content: "";
+  display: block;
+  height: 26px;
+  margin: 0 -12px 10px;
+  background: url("image/ui/leopard.png") repeat-x;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer::after {
+  content: "";
+  display: block;
+  height: 38px;
+  margin-top: 12px;
+  background: url("image/ui/blinkies.png") 0 0 / auto 38px repeat-x;
+  animation: ticker 60s linear infinite;
+}
+
+
+/* ---------- 16. ANIMATIONS (@keyframes) ----------
+   @keyframes describes the steps; the "animation" property on a
+   rule above plays it (name, duration, speed curve, repeat). */
+@keyframes drift {            /* stars slide diagonally (moves exactly 1-2 tiles = seamless) */
+  to { background-position: 256px 512px, -480px 480px, right center, 0 0, 0 0; }
+}
+
+@keyframes pulse {            /* wallpaper slowly gets brighter, then darker */
+  from { filter: brightness(0.9) saturate(1); }
+  to   { filter: brightness(1.15) saturate(1.25); }
+}
+
+@keyframes floatup {          /* sticker layers move in opposite directions */
+  to { background-position: 0 -1300px, 0 980px; }
+}
+
+@keyframes floatfront {
+  to { background-position: 0 -1700px; }
+}
+
+@keyframes marquee {
+  from { text-indent: 100%; }
+  to   { text-indent: -250%; }
+}
+
+@keyframes shimmer {          /* glitter slides inside the letters */
+  to { background-position: 128px 128px; }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes ticker {           /* 5026px = width of blinkies.png */
+  to { background-position: -5026px 0; }
+}
+
+@keyframes bob {
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+
+@keyframes heartbeat {
+  0%, 40%, 100% { transform: scale(1); }
+  15% { transform: scale(1.18); }
+  30% { transform: scale(0.96); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ---------- 17. SMALL SCREENS ----------
+   @media applies the rules inside ONLY when the screen is that
+   width or smaller. */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;        /* one column: menu drops below the page */
+  }
+
+  .menu {
+    position: static;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  html::before {
+    font-size: 1.2rem;
+  }
+
+  html::after {
+    display: none;                     /* no big stickers over text on phones */
+  }
+
+  body {
+    padding: 96px 8px 6px;
+  }
+
+  .home,
+  .about,
+  .edubg,
+  .skills,
+  .hobbies,
+  .Achievements,
+  .goals,
+  .photos,
+  .info,
+  main {
+    padding: 10px 8px 16px;
+    border-width: 14px;
+  }
+
+  :is(.home, .about, .edubg, .skills, .hobbies, .Achievements, .goals, .photos, .info, main)::after {
+    width: 80px;
+    height: 80px;
+    top: -94px;
+    right: 14px;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .intro::before {
+    height: 140px;
+  }
+
+  .home img,
+  .about img {
+    float: none;
+    display: block;
+    margin: 6px auto 14px;
+  }
+
+  td:first-child {
+    width: 38%;
+  }
+}
+
+
+/* ---------- 18. ACCESSIBILITY ----------
+   Turns every animation off for people who set their device to
+   "reduce motion". */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html::before {
+    text-indent: 0;
+  }
+}
+
+
+   .music li{
+display: flex;
+  align-items: center;   /* vertically centers star + player */
+  gap: 12px;
+  list-style: none;
+   }
+
+   .music li::before {
+  content: "★";
+  color: var(--blood); /* Centers the bullet in the music player */
+} 
+
+ .music audio {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 50px;
+  border: 2px solid var(--red);
+  background: #e07a86;      /* shows behind the controls */
+  color-scheme: dark;       /* dark controls in Chrome/Edge */
+}
+
+.music audio {
+  filter: sepia(1) saturate(4) hue-rotate(310deg);
+}
